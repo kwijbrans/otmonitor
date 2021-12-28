@@ -66,7 +66,7 @@ proc mqttjsonvalue {type val} {
     switch -- $type {
 	boolean {
 	    lappend rc \
-	      [format {"value": %s} [lindex {true false} [expr {!$val}]]]
+	      [format {"value": %d} [lindex {1 0} [expr {!$val}]]]
 	}
 	float {
 	    lappend rc [format {"value": %.2f} $val]
