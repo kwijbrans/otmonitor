@@ -142,11 +142,11 @@ proc mqttjson3 {name data} {
       } else {
           set type string
       }
-      set json [mqttjsonkeyvalue $type $name $data]
+      lappend json [mqttjsonkeyvalue $type $name $data]
       lappend json [format {"timestamp": %s} [clock milliseconds]]
     }
     else {
-      set json ""
+      lappend json ""
     }
     return "{[join $json {, }]}"
 }
