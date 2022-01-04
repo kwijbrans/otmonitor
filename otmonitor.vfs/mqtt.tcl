@@ -141,9 +141,12 @@ proc mqttjson3 {name data} {
           lassign [dict get $signals $name] key type
       } else {
           set type string
+      }
+      set json [mqttjsonkeyvalue $type $name $data]
+      lappend json [format {"timestamp": %s} [clock milliseconds]]
+    else {
+      set json ""
     }
-    set json [mqttjsonkeyvalue $type $name $data]
-    lappend json [format {"timestamp": %s} [clock milliseconds]]
     return "{[join $json {, }]}"
 }
 
