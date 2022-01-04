@@ -142,7 +142,7 @@ proc mqttjson3 {name data} {
 	} else {
 	    set type string
 	}
-	set value [lindex [mqttjsonkeyvalue $type $name $value] 1]
+	set value [mqttjsonkeyvalue $type $name $value]
     } else {
 	set value ""
     }
