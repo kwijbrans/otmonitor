@@ -133,17 +133,42 @@ proc mqttjsonkeyvalue {type key val} {
     return $rc
 }
 
+# Definition of possible signals and their parameters to be sent at once via mqtt
+set mqttsignals {
+    Flame			{on		boolean}
+    HotWater			{on		boolean}
+    CentralHeating		{on		boolean}
+    Fault			{on		boolean}
+    Diagnostic			{on		boolean}
+    RoomTemperature		{temp		float}
+    OutsideTemperature		{temp		float}
+    Setpoint			{temp		float}
+    ControlSetpoint		{temp		float}
+    DHWEnable			{on		boolean}
+    DHWSetpoint			{temp		float}
+    DHWTemperature		{temp		float}
+    CHEnable			{on		boolean}
+    CHSetpoint			{temp		float}
+    Modulation			{level		float}
+    MaxModulation		{level		float}	
+    BoilerWaterTemperature	{temp		float}
+    ReturnWaterTemperature	{temp		float}
+    CHWaterPresure		{bar		float}
+    CHWaterDeltaT		{temp		float}
+}
+
 proc mqttjson3 {name data} {
-    global signals
+    global signals mqttsignals gui
 	  set value ""
     if {[llength $data] == 1} {
-      set value [lindex $data 0]
-      if {$name ne ""} {
-          lassign [dict get $signals $name] key type
-      } else {
-          set type string
+      dict for {name2 args} $mqttsignals {
+        if {[llength $args] == 0} continue
+        lassign [dict get $mqttsignals $name2] key type
+        set param [string tolower $name2]
+        if {[info exists gui($param)]} {
+            set value "$value [mqttjsonkeyvalue $type $param $gui($param)]"
+        }
       }
-      set value [mqttjsonkeyvalue $type $name $value]
       set value "$value [format {"timestamp": %s} [clock milliseconds]]"
     }
     return "{$value}"
