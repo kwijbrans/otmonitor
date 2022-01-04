@@ -114,26 +114,35 @@ proc mqttjson2 {name data} {
     return "{[join $json {, }]}"
 }
 
+proc mqttjsonkeyvalue {type key val} {
+  switch -- $type {
+	boolean {
+	    set rc \
+	      [format {"%s": %d,} $key [lindex {1 0} [expr {!$val}]]]
+	}
+	float {
+	    set rc [format {"%s": %.2f,} $key $val]
+	}
+	byte - integer - unsigned {
+	    set rc [format {"%s": %d,} $key $val]
+	}
+	default {
+	    set rc [format {"%s": "%s",} $key $val]
+	}
+    }
+    return $rc
+}
+
 proc mqttjson3 {name data} {
     global signals
-    if {$name ne ""} {
-	set def [dict get $signals $name]
-    } else {
-	set def {}
+    if {[llength $data] == 1} {
+      set value [lindex $data 0]
+      if {$name ne ""} {
+          lassign [dict get $signals $name] key type
+      } else {
+          set type string
     }
-    set parameters {}
-    set argnum 0
-    foreach arg [dict keys $def] val $data {
-	if {$arg eq ""} {
-	    set arg arg[incr argnum]
-	    set type string
-	} else {
-	    set type [dict get $def $arg]
-	}
-	set value [mqttjsonvalue $type $val]
-	lappend parameters [format {"%s": {%s}} $arg [join $value {, }]]
-    }
-    lappend json [format {"args": {%s}} [join $parameters {, }]]
+    set json [mqttjsonkeyvalue $type $name $data]
     lappend json [format {"timestamp": %s} [clock milliseconds]]
     return "{[join $json {, }]}"
 }
