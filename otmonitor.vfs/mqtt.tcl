@@ -136,19 +136,17 @@ proc mqttjsonkeyvalue {type key val} {
 proc mqttjson3 {name data} {
     global signals
     if {[llength $data] == 1} {
-      set value [lindex $data 0]
-      if {$name ne ""} {
-          lassign [dict get $signals $name] key type
-      } else {
-          set type string
-      }
-      lappend json [mqttjsonkeyvalue $type $name $data]
-      lappend json [format {"timestamp": %s} [clock milliseconds]]
+	set value [lindex $data 0]
+	if {$name ne ""} {
+	    lassign [dict get $signals $name] key type
+	} else {
+	    set type string
+	}
+	set value [lindex [mqttsonkeyvalue $type $name $value] 1]
+    } else {
+	set value ""
     }
-    else {
-      lappend json ""
-    }
-    return "{[join $json {, }]}"
+    return "{$value}"
 }
 
 proc mqttraw {name data} {
