@@ -144,7 +144,7 @@ proc mqttjson3 {name data} {
           set type string
       }
       set value [mqttjsonkeyvalue $type $name $value]
-      set value "$value,[format {"timestamp": %s} [clock milliseconds]]"
+      set value "$value [format {"timestamp": %s} [clock milliseconds]]"
     }
     return "{$value}"
 }
