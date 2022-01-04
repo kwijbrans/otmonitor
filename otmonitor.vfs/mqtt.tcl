@@ -135,16 +135,16 @@ proc mqttjsonkeyvalue {type key val} {
 
 proc mqttjson3 {name data} {
     global signals
+	  set value ""
     if {[llength $data] == 1} {
-	set value [lindex $data 0]
-	if {$name ne ""} {
-	    lassign [dict get $signals $name] key type
-	} else {
-	    set type string
-	}
-	set value [mqttjsonkeyvalue $type $name $value]
-    } else {
-	set value ""
+      set value [lindex $data 0]
+      if {$name ne ""} {
+          lassign [dict get $signals $name] key type
+      } else {
+          set type string
+      }
+      set value [mqttjsonkeyvalue $type $name $value]
+      set value "$value,[format {"timestamp": %s} [clock milliseconds]]"
     }
     return "{$value}"
 }
